@@ -43,25 +43,54 @@ public class SQLiteJDBC
       c = DriverManager.getConnection(jdbc_url);
       System.out.println("Opened database successfully");
 
-      stmt = c.createStatement();
-      String sql = "CREATE TABLE QD ( NAME  TEXT UNIQUE,NUMS TEXT,UnitType TEXT,UpdateTime TEXT)"; 
-      stmt.executeUpdate(sql);
-      stmt.close();
+//      stmt = c.createStatement();
+//      String sql = "CREATE TABLE QD ( NAME  TEXT UNIQUE,NUMS TEXT,UnitType TEXT,UpdateTime TEXT)"; 
+//      stmt.executeUpdate(sql);
+//      stmt.close();
+//      
+//      stmt = c.createStatement();
+//      String sqloperadd = "CREATE TABLE OPERATE ( NAME  TEXT ,NUMS TEXT,OPERATE TEXT,UpdateTime TEXT)";
+//      stmt.executeUpdate(sqloperadd);
+//      stmt.close();
       
       stmt = c.createStatement();
-      String sqloperadd = "CREATE TABLE OPERATE ( NAME  TEXT ,NUMS TEXT,OPERATE TEXT,UpdateTime TEXT)";
+      String sqloperadd = "CREATE TABLE WORKBENCH ( ID TEXT,NAME  TEXT ,VALUE TEXT,REMARK TEXT,FWIP TEXT,SERVERIP TEXT,STATUS TEXT)";
       stmt.executeUpdate(sqloperadd);
       stmt.close();
-      
       c.close();
     } catch ( Exception e ) {
       System.err.println( e.getClass().getName() + ": " + e.getMessage() );
       try {stmt.close();c.close();} catch (SQLException e1) {}
     }
+    
+    try {
+        Class.forName("org.sqlite.JDBC");
+        c = DriverManager.getConnection(jdbc_url);
+        System.out.println("Opened database successfully");
+
+//        stmt = c.createStatement();
+//        String sql = "CREATE TABLE QD ( NAME  TEXT UNIQUE,NUMS TEXT,UnitType TEXT,UpdateTime TEXT)"; 
+//        stmt.executeUpdate(sql);
+//        stmt.close();
+//        
+//        stmt = c.createStatement();
+//        String sqloperadd = "CREATE TABLE OPERATE ( NAME  TEXT ,NUMS TEXT,OPERATE TEXT,UpdateTime TEXT)";
+//        stmt.executeUpdate(sqloperadd);
+//        stmt.close();
+        
+        stmt = c.createStatement();
+        String sqloperadd =  "CREATE TABLE FWSTATUS (VALUE TEXT)";
+        stmt.executeUpdate(sqloperadd);
+        stmt.close();
+        c.close();
+      } catch ( Exception e ) {
+        System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+        try {stmt.close();c.close();} catch (SQLException e1) {}
+      }
     System.out.println("Table created successfully");
   }
   /**
-   * ��ѯ��ǰ�嵥
+   * 查询当前清单
    */
   public static List<Map> query(){
 	    try {
@@ -71,17 +100,23 @@ public class SQLiteJDBC
 	      System.out.println("Opened database successfully");
 	      List<Map> list=new ArrayList();
 	      stmt = c.createStatement();
-	      ResultSet rs = stmt.executeQuery( "SELECT * FROM QD;" );
+	      ResultSet rs = stmt.executeQuery( "SELECT * FROM WORKBENCH;" );
 	      while ( rs.next() ) {
-	    	 String  name = rs.getString("name");
-		     String  nums = rs.getString("nums");
-		     String  unittype = rs.getString("unittype");
-		     String  updatetime = rs.getString("updatetime");
+	    	 String  id = rs.getString("ID");
+	    	 String  name = rs.getString("NAME");
+		     String  value = rs.getString("VALUE");
+		     String  remark = rs.getString("REMARK");
+		     String  fwip = rs.getString("FWIP");
+		     String  serverip = rs.getString("SERVERIP");
+		     String  status = rs.getString("STATUS");
 	    	 Map map=new HashMap();
-	    	 map.put("name", name);
-	    	 map.put("nums", nums);
-	    	 map.put("unittype", unittype);
-	    	 map.put("updatetime", updatetime);
+	    	 map.put("ID", id);
+	    	 map.put("NAME", name);
+	    	 map.put("VALUE", value);
+	    	 map.put("REMARK", remark);
+	    	 map.put("FWIP", fwip);
+	    	 map.put("SERVERIP", serverip);
+	    	 map.put("STATUS", status);
 	         list.add(map);
 //	         System.out.println(name+nums+unit+updatetime);
 	      }
@@ -95,29 +130,139 @@ public class SQLiteJDBC
 	      return null;
 	    }
   }
+  
   /**
-   * �����嵥
-   * @param name
-   * @param unit
+   * 根据ID查询
+   * @param param
+   * @return
    */
-  public static String insert(String name,String unit,String flag,String nums){
+  public static List<Map> query(String param){
 	    try {
 	      Class.forName("org.sqlite.JDBC");
 	      c = DriverManager.getConnection(jdbc_url);
 	      c.setAutoCommit(false);
 	      System.out.println("Opened database successfully");
-	      //��ǰʱ��
+	      List<Map> list=new ArrayList();
+	      stmt = c.createStatement();
+	      ResultSet rs = stmt.executeQuery( "SELECT * FROM WORKBENCH where id='"+param+"'" );
+	      while ( rs.next() ) {
+	    	 String  id = rs.getString("ID");
+	    	 String  name = rs.getString("NAME");
+		     String  value = rs.getString("VALUE");
+		     String  remark = rs.getString("REMARK");
+		     String  fwip = rs.getString("FWIP");
+		     String  serverip = rs.getString("SERVERIP");
+		     String  status = rs.getString("STATUS");
+	    	 Map map=new HashMap();
+	    	 map.put("ID", id);
+	    	 map.put("NAME", name);
+	    	 map.put("VALUE", value);
+	    	 map.put("REMARK", remark);
+	    	 map.put("FWIP", fwip);
+	    	 map.put("SERVERIP", serverip);
+	    	 map.put("STATUS", status);
+	         list.add(map);
+//	         System.out.println(name+nums+unit+updatetime);
+	      }
+	      rs.close();
+	      stmt.close();
+	      c.close();
+	      return list;
+	    } catch ( Exception e ) {
+	      System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+	      try {stmt.close();c.close();} catch (SQLException e1) {}
+	      return null;
+	    }
+}
+  /**
+   * 服务主机运行状态
+   * @param value
+   * @return
+   */
+  public static String insertStatus(String value){
+	    try {
+	      Class.forName("org.sqlite.JDBC");
+	      c = DriverManager.getConnection(jdbc_url);
+	      c.setAutoCommit(false);
+	      System.out.println("Opened database successfully");
+	      //当前时间
 	      Date date = new Date();
 		  SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		  String now = sdf.format(date);
-		  //��ǰʱ��
+		  //当前时间
 		  stmt = c.createStatement();
 		  String sql="";
-		  if(flag.equals("save")){
-			  sql = " INSERT INTO QD (NAME,NUMS,UnitType,UpdateTime) VALUES ('"+name+"','0','"+unit+"','"+now+"'); "; 
-		  }else{
-			  sql = " UPDATE QD set NUMS = '"+nums+"',UpdateTime='"+now+"' where NAME='"+name+"'; ";
-		  }
+		  sql = " INSERT INTO FWSTATUS (VALUE) VALUES ('"+value+"'); "; 
+	      
+	      stmt.executeUpdate(sql);
+	      stmt.close();
+	      c.commit();
+	      c.close();
+	    } catch ( Exception e ) {
+	      e.printStackTrace();
+	      System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+	      try {stmt.close();c.close();} catch (SQLException e1) {}
+	      return Common.ERROR;
+	    }
+	    System.out.println("Records created successfully");
+	    return Common.SUCCESS;
+}
+  
+	  /**
+	   * 清空表数据
+	   * @return
+	   */
+	  public static String clearAllStatus(){
+		    try {
+		      Class.forName("org.sqlite.JDBC");
+		      c = DriverManager.getConnection(jdbc_url);
+		      c.setAutoCommit(false);
+		      System.out.println("Opened database successfully");
+		      //当前时间
+		      Date date = new Date();
+			  SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			  String now = sdf.format(date);
+			  //当前时间
+			  stmt = c.createStatement();
+			  String sql="";
+			  sql = " delete from fwstatus"; 
+		      stmt.executeUpdate(sql);
+		      stmt.close();
+		      c.commit();
+		      c.close();
+		    } catch ( Exception e ) {
+		      e.printStackTrace();
+		      System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+		      try {stmt.close();c.close();} catch (SQLException e1) {}
+		      return Common.ERROR;
+		    }
+		    System.out.println("Records created successfully");
+		    return Common.SUCCESS;
+	}
+  
+  /**
+   * 新增清单
+   * @param name
+   * @param unit
+   */
+  public static String insert(String id,String name,String value,String remark,String fwip,String serverip){
+	    try {
+	      Class.forName("org.sqlite.JDBC");
+	      c = DriverManager.getConnection(jdbc_url);
+	      c.setAutoCommit(false);
+	      System.out.println("Opened database successfully");
+	      //当前时间
+	      Date date = new Date();
+		  SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		  String now = sdf.format(date);
+		  //当前时间
+		  stmt = c.createStatement();
+		  String sql="";
+//		  if(flag.equals("save")){
+			  sql = " INSERT INTO WORKBENCH (ID,NAME,VALUE,REMARK,FWIP,SERVERIP) VALUES ('"+id+"','"+name+"','"+value+"','"+remark+"','"+fwip+"','"+serverip+"'); "; 
+//		  }else{
+//			  sql = " UPDATE QD set NUMS = '"+nums+"',UpdateTime='"+now+"' where NAME='"+name+"'; ";
+//		  }
 	      
 	      stmt.executeUpdate(sql);
 	      stmt.close();
@@ -132,11 +277,45 @@ public class SQLiteJDBC
 	    System.out.println("Records created successfully");
 	    return Common.SUCCESS;
   }
+  
+  public static String update(String id,String name,String value,String remark,String fwip,String serverip){
+	    try {
+	      Class.forName("org.sqlite.JDBC");
+	      c = DriverManager.getConnection(jdbc_url);
+	      c.setAutoCommit(false);
+	      System.out.println("Opened database successfully");
+	      //当前时间
+	      Date date = new Date();
+		  SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		  String now = sdf.format(date);
+		  //当前时间
+		  stmt = c.createStatement();
+		  String sql="";
+//		  if(flag.equals("save")){
+//			  sql = " INSERT INTO WORKBENCH (ID,NAME,VALUE,REMARK) VALUES ('"+id+"','"+name+"','"+value+"','"+remark+"','"+fwip+"'); "; 
+//		  }else{
+			  sql = " UPDATE WORKBENCH set NAME = '"+name+"',VALUE='"+value+"',REMARK='"+remark+"',FWIP='"+fwip+"',SERVERIP='"+serverip+"' where ID='"+id+"' ";
+//		  }
+	      
+	      stmt.executeUpdate(sql);
+	      stmt.close();
+	      c.commit();
+	      c.close();
+	    } catch ( Exception e ) {
+	      e.printStackTrace();
+	      System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+	      try {stmt.close();c.close();} catch (SQLException e1) {}
+	      return Common.ERROR;
+	    }
+	    System.out.println("Records created successfully");
+	    return Common.SUCCESS;
+}
+  
   /**
-   * ɾ���嵥
+   * 删除清单
    * @param name
    */
-  public static void delete(String name){
+  public static void delete(String id){
 	    try {
 	      Class.forName("org.sqlite.JDBC");
 	      c = DriverManager.getConnection(jdbc_url);
@@ -144,7 +323,7 @@ public class SQLiteJDBC
 	      System.out.println("Opened database successfully");
 
 	      stmt = c.createStatement();
-	      String sql = "DELETE from QD where NAME='"+name+"';";
+	      String sql = "DELETE from WORKBENCH where ID='"+id+"';";
 	      stmt.executeUpdate(sql);
 	      stmt.close();
 	      c.commit();
@@ -157,7 +336,8 @@ public class SQLiteJDBC
   }
   ////////////////////////////////OPERATE////////////////////////////////////////
   /**
-   * �����嵥
+   * Invalid
+   * 新增清单
    * @param name
    * @param unit
    */
@@ -167,11 +347,11 @@ public class SQLiteJDBC
 	      c = DriverManager.getConnection(jdbc_url);
 	      c.setAutoCommit(false);
 	      System.out.println("Opened database successfully");
-	      //��ǰʱ��
+	      //当前时间
 	      Date date = new Date();
 		  SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		  String now = sdf.format(date);
-		  //��ǰʱ��
+		  //当前时间
 		  stmt = c.createStatement();
 		  String sql = " INSERT INTO OPERATE (NAME,NUMS,OPERATE,UpdateTime) VALUES ('"+name+"','"+nums+"','"+operate+"','"+now+"'); "; 
 	      stmt.executeUpdate(sql);
@@ -189,7 +369,8 @@ public class SQLiteJDBC
   }
 
   /**
-   * ��ѯ��ǰ�嵥
+   * Invalid
+   * 查询当前清单
    */
   public static List<Map> queryAdd(){
 	    try {

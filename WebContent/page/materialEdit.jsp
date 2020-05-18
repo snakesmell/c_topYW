@@ -21,16 +21,36 @@
 	<label style="width: 20%">&nbsp;&nbsp;服务：</label><input id="serverip" autocomplete="off" type="text" style="margin-top: 10px; width: 80%"><br>
 	<label style="width: 20%">&nbsp;&nbsp;内容：</label><input id="value" autocomplete="off" type="text" style="margin-top: 5px; width: 80%"><br><br>
 	<label style="width: 20%">&nbsp;&nbsp;类别：</label>
-	<select style="margin-left: -4px;"  id="remark" >
+	<select style="margin-left: -4px;" id="remark" >
 		<option value="Tomcat">Tomcat</option>
 		<option value="Server">Server</option>
 		<option value="TomcatControl">TomcatControl</option>
 	</select>
-	<!-- <input id="remark" autocomplete="off" value=" " type="text" style="margin-top: 5px; width: 80%"><br> -->
 	<br>
 	<button onclick="loadData()" style="float:right;margin-right: 30px;">确定</button>
 	<script type="text/javascript">
 	var pdialog = frameElement.dialog;
+	
+	var CommonID="";
+	$(document).ready(function(){
+		var id=<%=request.getParameter("ID")%>;
+		$.ajax({
+	        url: "<%=basePath%>NumsQuery",
+	        type: "post",
+	        data: { ID: id },
+	        dataType: "json",
+	        success: function(msg) {
+	        	//console.log(msg);
+	        	$("#name").val(msg.NAME);
+	    		$("#value").val(msg.VALUE);
+	    		$("#remark").val(msg.REMARK);
+	    		$("#fwip").val(msg.FWIP);
+	    		$("#serverip").val(msg.SERVERIP);
+	    		CommonID=msg.ID;
+	        }
+	    });  
+	});
+	
 	
 	function loadData(){
 		var param1=$("#name").val();
@@ -47,9 +67,9 @@
 			return;
 		}
     	$.ajax({
-            url: "<%=basePath%>NumsAdd",
+            url: "<%=basePath%>NumsEdit",
             type: "post",
-            data: { NAME: $("#name").val(),VALUE:$("#value").val(),REMARK:$("#remark").val(),FWIP:$("#fwip").val(),SERVERIP:$("#serverip").val() },
+            data: { NAME: $("#name").val(),VALUE:$("#value").val(),REMARK:$("#remark").val(),ID:CommonID,FWIP:$("#fwip").val(),SERVERIP:$("#serverip").val() },
             dataType: "json",
             success: function(msg) {
             	if(msg){

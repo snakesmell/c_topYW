@@ -32,15 +32,15 @@ public class SaveAction extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		String name=request.getParameter("name");
-		String unit=request.getParameter("unit");
-		String flag = SQLiteJDBC.insert(name, unit, "save", "0");
-		PrintWriter writer = response.getWriter();
-		if(flag.equals(Common.SUCCESS)){
-			writer.print(true);
-		}else{
-			writer.print(false);
-		}
+//		String name=request.getParameter("name");
+//		String unit=request.getParameter("unit");
+//		String flag = SQLiteJDBC.insert(name, unit, "save", "0");
+//		PrintWriter writer = response.getWriter();
+//		if(flag.equals(Common.SUCCESS)){
+//			writer.print(true);
+//		}else{
+//			writer.print(false);
+//		}
 	}
 
 	/**

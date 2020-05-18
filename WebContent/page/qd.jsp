@@ -7,7 +7,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>物资管理系统</title>
+<title>服务配置</title>
 	<link href="<%=basePath%>lib/ligerUI/skins/Aqua/css/ligerui-all.css" rel="stylesheet" type="text/css" />
     <script src="<%=basePath%>lib/jquery/jquery-1.9.0.min.js" type="text/javascript"></script>
     <script src="<%=basePath%>lib/ligerUI/js/core/base.js" type="text/javascript"></script>
@@ -19,23 +19,25 @@
 </head>
 <!-- <div id="maingrid"></div>  -->
 <body>
-	<button style="width: 120px;height: 30px;" class="lb" onclick="materialAdd()">物资添加</button>
-	<button style="width: 120px;height: 30px;" class="lb" onclick="materialRemove()">物资删除</button>
-	<button style="width: 120px;height: 30px;" class="lb" onclick="save()">入库</button>
-	<button style="width: 120px;height: 30px;" class="lb" onclick="out()">出库</button>
+	<button style="width: 120px;height: 30px;" class="lb" onclick="materialAdd()">新增</button>
+	<button style="width: 120px;height: 30px;" class="lb" onclick="materialEdit()">修改</button>
+	<button style="width: 120px;height: 30px;" class="lb" onclick="materialRemove()">删除</button>
+	<!-- <button style="width: 120px;height: 30px;" class="lb" onclick="save()">入库</button>
+	<button style="width: 120px;height: 30px;" class="lb" onclick="out()">出库</button> -->
 	<div id="maingrid" style="width: 90%"></div>
 </body>
  <script type="text/javascript">
-	 	var initF=<%=flag%>;
+	 	<%-- var initF=<%=flag%>;
 		if(initF==1){
 			
 		}else{
 			window.location.href='<%=basePath%>index.jsp'
-		}
+		} --%>
         
-		var $grid;
-        var CommonName="";
-        var CommonNums="";
+		var $grid;//框架GIRD
+        var CommonName="";//名称
+        //var CommonNums="";//
+        var CommonID="";//ID
         $(function (){
         	$("#layout1").ligerLayout({ leftWidth: 200});
             //v1.02以上支持直接返回grid的管理对象
@@ -65,30 +67,48 @@
             $grid = $("#maingrid").ligerGrid({
         		width : "100%",
         		columns : [ {
+        			display : "主键",
+        			name : "ID",
+        			width : 100,
+        			type : "text",
+        			align : "center"
+        		}, {
         			display : "名称",
-        			name : "name",
-        			width : 150,
+        			name : "NAME",
+        			width : 200,
         			type : "text",
         			align : "center"
         		}, {
-        			display : "数量",
-        			name : "nums",
+        			display : "运维服务",
+        			name : "FWIP",
+        			width : 200,
+        			type : "text",
+        			align : "center"
+        		}, {
+        			display : "服务端口",
+        			name : "SERVERIP",
+        			width : 200,
+        			type : "text",
+        			align : "center"
+        		}, {
+        			display : "内容",
+        			name : "VALUE",
+        			width : 300,
+        			type : "text",
+        			align : "center"
+        		}, {
+        			display : "类别",
+        			name : "REMARK",
         			width : 100,
         			type : "text",
         			align : "center"
         		}, {
-        			display : "单位",
-        			name : "unittype",
+        			display : "状态",
+        			name : "STATUS",
         			width : 100,
         			type : "text",
         			align : "center"
-        		}, {
-        			display : "更新时间",
-        			name : "updatetime",
-        			width : 160,
-        			type : "text",
-        			align : "center"
-        		} ],
+        		}  ],
         		heightDiff : -5,
         		sortName : 'name',
         		sortOrder : 'desc',
@@ -103,29 +123,12 @@
         		rownumbers : true,
         		url : "<%=basePath%>DbAction",
         		onSelectRow : function(data, rowindex, rowobj) {
-        			CommonName=data.name;
-                	CommonNums=data.nums;
+        			CommonName=data.NAME;
+                	CommonID=data.ID;
         		}
         	});
             
         });
-        
-        
-       <%--  function loadData(){
-        	$.ajax({
-                url: "<%=basePath%>DbAction",
-                type: "post",
-                data: { id: '0' },
-                dataType: "json",
-                success: function(msg) {
-                    console.log(msg);
-                    var jsonObj = {};
-                    jsonObj.Rows = msg;
-                    $grid.set({ data: jsonObj }); 
-                    $grid.loadData();//加载数据
-                }
-            });  
-        } --%>
         
         function getCheckedData()
         {
@@ -137,21 +140,30 @@
             });
             $.ligerDialog.alert('选择的是' + str);
         }
-        
+        //新增页面
         function materialAdd(){
-        	$.ligerDialog.open({ title:"新增物资",height: 200,width:400 , url: '<%=basePath%>/page/materialAdd.jsp' });
+        	$.ligerDialog.open({ title:"新增设备",height: 250,width:400 , url: '<%=basePath%>/page/materialAdd.jsp' });
+        }
+        //修改页面
+        function materialEdit(){
+        	if(CommonID==null||CommonID==""){
+        		parent.$.ligerDialog.success('请选择服务!');
+        		return;
+        	}
+        	$.ligerDialog.open({ title:"修改设备",height: 250,width:400 , url: "<%=basePath%>/page/materialEdit.jsp?ID='"+CommonID+"'" });
         }
         
 		function materialRemove(){
-			if(CommonName=="")return;
+			if(CommonID=="")return;
 			$.ligerDialog.confirm('确认删除物资：'+CommonName+'?', function (yes) {
 				if(yes){
 					$.ajax({
-		                url: "<%=basePath%>DelAction",
+		                url: "<%=basePath%>NumsDel",
 		                type: "post",
-		                data: { name: CommonName },
+		                data: { ID: CommonID },
 		                dataType: "json",
 		                success: function(msg) {
+		                	CommonID="";
 		                	CommonName="";
 		                	$grid.loadData();//加载数据	                	
 		                }
@@ -159,38 +171,6 @@
 				}
 			});
         }
-		
-		function save(){
-			if(CommonName=="")return;
-			$.ligerDialog.prompt('入库：'+CommonName, function (yes,value) { if(yes) {
-				$.ajax({
-	                url: "<%=basePath%>NumsAdd",
-	                type: "post",
-	                data: { name:CommonName,numsbefore:CommonNums,numsafter: value },
-	                dataType: "json",
-	                success: function(msg) {
-	                	CommonName="";
-	                	$grid.loadData();//加载数据	
-	                }
-	            });  
-			} });
-		}
-		
-		function out(){
-			if(CommonName=="")return;
-			$.ligerDialog.prompt('出库：'+CommonName, function (yes,value) { if(yes) {
-				$.ajax({
-	                url: "<%=basePath%>NumsDel",
-	                type: "post",
-	                data: { name:CommonName,numsbefore:CommonNums,numsafter: value },
-	                dataType: "json",
-	                success: function(msg) {
-	                	CommonName="";
-	                	$grid.loadData();//加载数据	
-	                }
-	            });  
-			} });
-		}
 		
     </script>
 </html>

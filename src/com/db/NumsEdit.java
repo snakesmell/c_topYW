@@ -2,6 +2,7 @@ package com.db;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.UUID;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -12,16 +13,16 @@ import javax.servlet.http.HttpServletResponse;
 import com.sqliteUtil.SQLiteJDBC;
 
 /**
- * Servlet implementation class NumsDel
+ * Servlet implementation class NumsAdd
  */
-@WebServlet("/NumsDel")
-public class NumsDel extends HttpServlet {
+@WebServlet("/NumsEdit")
+public class NumsEdit extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public NumsDel() {
+    public NumsEdit() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -40,7 +41,13 @@ public class NumsDel extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		String id=request.getParameter("ID");
-		SQLiteJDBC.delete(id);
+		String name=request.getParameter("NAME");
+		String value=request.getParameter("VALUE");
+		String remark=request.getParameter("REMARK");
+		String fwip=request.getParameter("FWIP");
+		String serverip=request.getParameter("SERVERIP");
+		SQLiteJDBC.update(id,name,value,remark,fwip,serverip);
+		//SQLiteJDBC.insertOperate(name,String.valueOf(aft),"add");//������¼
 		PrintWriter writer = response.getWriter();
 		writer.print(true);
 	}

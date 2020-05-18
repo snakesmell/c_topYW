@@ -2,6 +2,7 @@ package com.db;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.UUID;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -31,18 +32,7 @@ public class NumsAdd extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		String name=request.getParameter("name");
-		String numsbefore=request.getParameter("numsbefore");
-		String numsafter=request.getParameter("numsafter");
-		int bef=Integer.parseInt(numsbefore);
-		int aft=Integer.parseInt(numsafter);
-		int end=bef+aft;
-		if(end<0)end=0;
-		String nums=String.valueOf(end);
-		SQLiteJDBC.insert(name, "", "update", nums);
-		SQLiteJDBC.insertOperate(name,String.valueOf(aft),"add");//²Ù×÷¼ÇÂ¼
-		PrintWriter writer = response.getWriter();
-		writer.print(true);
+		
 	}
 
 	/**
@@ -50,7 +40,16 @@ public class NumsAdd extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		doGet(request, response);
+		String name=request.getParameter("NAME");
+		String value=request.getParameter("VALUE");
+		String remark=request.getParameter("REMARK");
+		String fwip=request.getParameter("FWIP");
+		String serverip=request.getParameter("SERVERIP");
+		SQLiteJDBC.insert(UUID.randomUUID().toString(),name,value,remark,fwip,serverip);
+		//SQLiteJDBC.insertOperate(name,String.valueOf(aft),"add");//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â¼
+		PrintWriter writer = response.getWriter();
+		writer.print(true);
 	}
 
 }
+
