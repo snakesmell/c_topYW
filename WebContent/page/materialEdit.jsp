@@ -24,7 +24,6 @@
 	<select style="margin-left: -4px;" id="remark" >
 		<option value="Tomcat">Tomcat</option>
 		<option value="Server">Server</option>
-		<option value="TomcatControl">TomcatControl</option>
 	</select>
 	<br>
 	<button onclick="loadData()" style="float:right;margin-right: 30px;">确定</button>

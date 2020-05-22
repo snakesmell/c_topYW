@@ -24,7 +24,6 @@
 	<select style="margin-left: -4px;"  id="remark" >
 		<option value="Tomcat">Tomcat</option>
 		<option value="Server">Server</option>
-		<option value="TomcatControl">TomcatControl</option>
 	</select>
 	<!-- <input id="remark" autocomplete="off" value=" " type="text" style="margin-top: 5px; width: 80%"><br> -->
 	<br>

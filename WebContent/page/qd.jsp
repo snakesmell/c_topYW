@@ -73,7 +73,7 @@
         			type : "text",
         			align : "center"
         		}, {
-        			display : "名称",
+        			display : "服务名称",
         			name : "NAME",
         			width : 200,
         			type : "text",
